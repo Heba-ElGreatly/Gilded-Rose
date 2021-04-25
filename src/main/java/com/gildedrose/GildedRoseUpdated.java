@@ -1,12 +1,14 @@
 package com.gildedrose;
 
 public class GildedRoseUpdated {
+
     Item[] items;
 
     public final static String BACKSTAGE_ITEM = "Backstage passes to a TAFKAL80ETC concert";
     public final static String AGED_BRIE = "Aged Brie";
     public final static String SULFURAS_HAND_OF_RAGNAROS = "Sulfuras, Hand of Ragnaros";
     public final static String CONJURED_MANA_CAKE = "Conjured Mana Cake";
+
 
     public GildedRoseUpdated(Item[] items) {
         this.items = items;
@@ -25,10 +27,11 @@ public class GildedRoseUpdated {
 
     private void decreaseQuality(Item item){
 
-        if (checkSellInValue(item) || item.name.equalsIgnoreCase(CONJURED_MANA_CAKE)){
+
+        if (hasRemainingSellInValue(item) || item.name.equalsIgnoreCase(CONJURED_MANA_CAKE)){
             item.quality = item.quality - 2;
         }
-        if(item.name.equalsIgnoreCase(BACKSTAGE_ITEM) && item.sellIn ==0){
+        if((item.name.equalsIgnoreCase(BACKSTAGE_ITEM) && item.sellIn ==0) || (item.name.equalsIgnoreCase(BACKSTAGE_ITEM) && hasRemainingSellInValue(item))){
             item.quality = 0;
         }
     }
@@ -43,17 +46,20 @@ public class GildedRoseUpdated {
                 && item.sellIn >0 && item.sellIn < 6){
             item.quality = item.quality + 3 ;
         }
-        else if (item.name.equalsIgnoreCase(AGED_BRIE)){
+        else if (item.name.equalsIgnoreCase(AGED_BRIE) || (item.name.equalsIgnoreCase(BACKSTAGE_ITEM) && item.sellIn > 10)){
             item.quality = item.quality + 1 ;
         }
 
     }
 
 
-    private boolean checkSellInValue(Item item){
+    private boolean hasRemainingSellInValue(Item item){
         boolean negativeSellIn = false ;
         if(item.sellIn < 0 ){
             negativeSellIn = true;
+        }
+        if(item.name.equalsIgnoreCase(CONJURED_MANA_CAKE) && item.sellIn < 0){
+            item.quality = item.quality - 2;
         }
         return negativeSellIn;
     }
@@ -65,11 +71,13 @@ public class GildedRoseUpdated {
     }
 
     private Item validateQuality(Item item) {
-        if (item.quality < 0){
-            item.quality =  0;
-        }
-        if(item.quality > 50){
-            item.quality = 50;
+        if(!item.name.equalsIgnoreCase(SULFURAS_HAND_OF_RAGNAROS)) {
+            if (item.quality < 0) {
+                item.quality = 0;
+            }
+            if (item.quality > 50) {
+                item.quality = 50;
+            }
         }
         return item;
     }
